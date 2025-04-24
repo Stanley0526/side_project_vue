@@ -48,17 +48,10 @@ defineProps({
   },
 });
 </script>
-<style  scoped >
+<style scoped>
 .postItem {
   box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.08);
   border-radius: 8px;
-  transition: all .2s;
-  overflow: hidden;
-}
-
-.postItem:hover{
-  box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.2);
-
 }
 
 .postInfo {

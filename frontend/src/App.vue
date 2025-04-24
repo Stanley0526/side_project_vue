@@ -11,7 +11,7 @@
     <router-view></router-view>
   </template>
   <footer class="footer" :class="{ inside: $route.name === 'login' }">
-    &copy;Project. All Rights Reserved.
+    &copy;Fenghua. All Rights Reserved.
   </footer>
 </template>
 

@@ -19,7 +19,6 @@ export function saveUser(user) {
 // 取得使用者資訊
 export function getUser() {
   const userData = localStorage.getItem("user"); // 從 localStorage 取得 "user"
-  
   if (!userData) return null; // 如果沒有找到使用者資料，回傳 null
   try {
     return JSON.parse(userData); // 將取得的 JSON 字串轉換為物件並回傳
