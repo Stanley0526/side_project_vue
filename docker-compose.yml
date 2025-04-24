@@ -1,0 +1,19 @@
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+  backend:
+    build: ./backend
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_CLIENT=sqlite
+      - NODE_ENV=development
