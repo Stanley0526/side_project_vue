@@ -52,7 +52,7 @@ const agreementChecked = ref(false);
 
 const store = useStore();
 const router = useRouter();
-
+ 
 async function register() {
   if (!agreementChecked.value) {
     alert("請先閱讀並同意隱私權協議和使用規範");

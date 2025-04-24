@@ -46,8 +46,10 @@
               store.dispatch('addComment', {
                 content,
                 postId: post.id,
-              })
+              });
+              content = '';
             "
+            :disabled="!content.trim()"
             class="commentPubBtn"
           >
             發布
