@@ -11,22 +11,16 @@
           placeholder="用戶名"
           v-model="username"
         />
-        <input
-          type="password"
-          placeholder="密碼"
-          v-model="password"
-        />
+        <input type="password" placeholder="密碼" v-model="password" />
         <button
           type="submit"
           class="loginButton"
-          @click="isLogin ? login() : register()"
+          @click="isLogin ? handleLogin() : handleRegister()"
         >
           {{ isLogin ? "登入" : "註冊" }}
         </button>
         <p @click="isLogin = !isLogin" class="info">
-          {{
-            isLogin ? "還沒有帳號？點選註冊" : "已有帳號？點擊登入"
-          }}
+          {{ isLogin ? "還沒有帳號？點選註冊" : "已有帳號？點擊登入" }}
         </p>
         <div v-if="!isLogin" class="agreement">
           <input
@@ -34,14 +28,17 @@
             v-model="agreementChecked"
           />勾選表示同意隱私協議和使用規範
         </div>
+        <div v-if="error" class="error-message">
+          <p>{{ error }}</p>
+        </div>
       </form>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { login, register } from "@/api/auth";
 
 const isLogin = ref(true);
 
@@ -50,30 +47,52 @@ const username = ref("");
 const password = ref("");
 const agreementChecked = ref(false);
 
-const store = useStore();
 const router = useRouter();
- 
-async function register() {
+
+const error = ref(null);
+
+// 註冊處理
+const handleRegister = async () => {
   if (!agreementChecked.value) {
-    alert("請先閱讀並同意隱私權協議和使用規範");
+    error.value = "請勾選同意隱私協議和使用規範";
     return;
   }
-  await store.dispatch("registerUser", {
-    email: email.value,
-    username: username.value,
-    password: password.value,
-  });
-  router.replace("/");
+  try {
+    // 呼叫註冊函數，傳入 email, username 和 password
+    const user = await register(email.value, username.value, password.value);
+    console.log("User registered:", user);
+    router.replace("/"); // 註冊成功後，跳轉到首頁
+  } catch (err) {
+    error.value = err.message || "註冊失敗";
+    console.error("Registration error:", err.message);
+  }
 }
 
-async function login() {
-  await store.dispatch("loginUser", {
-    email: email.value,
-    password: password.value,
-  });
-  router.replace("/");
+// 登入處理
+const handleLogin = async () => {
+  try {
+    const user = await login(email.value, password.value);
+    console.log("User logged in:", user);
+    router.replace("/"); // 登入成功後，跳轉到首頁
+  } catch (err) {
+    error.value = err.message || "登入失敗";
+    console.error("Login error:", err.message);
+  }
 }
+
+// return {
+//   email,
+//   username,
+//   password,
+//   handleLogin,
+//   handleRegister,
+//   error,
+//   isLogin,
+//   agreementChecked,
+// }
+
 </script>
+
 <style scoped>
 .loginPage {
   display: grid;
@@ -125,11 +144,7 @@ input::placeholder {
 }
 
 .loginButton {
-  background: linear-gradient(
-    89.93deg,
-    #00c2ff 0.06%,
-    #0047ff 105.68%
-  );
+  background: linear-gradient(89.93deg, #00c2ff 0.06%, #0047ff 105.68%);
   padding: 12px 0;
   color: white;
   border: none;
