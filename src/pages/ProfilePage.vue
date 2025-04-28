@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <PostDetails v-if="showPostDetails" :post="selectedPost"/>
+  <PostDetails v-if="showPostDetails" :post="selectedPost" />
 </template>
 <script setup>
 import TheIcon from "../components/TheIcon.vue";
@@ -49,7 +49,9 @@ import PostDetails from "../components/PostDetails.vue";
 
 import { useStore } from "vuex";
 import { computed, ref, reactive, watch } from "vue";
-import { loadPostsByMe, loadPostsLikedOrFavoredByMe } from "../apis/post";
+// import { loadPostsByMe, loadPostsLikedOrFavoredByMe } from "../apis/post";
+import { db } from "../firebase"; // 確保你有 export db
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const store = useStore();
 const showPostDetails = computed(() => store.state.showPostDetails);
@@ -93,17 +95,41 @@ watch(
     switch (currentTab.value) {
       case 0:
         if (myPosts[0].length === 0) {
-          myPosts[0] = await loadPostsByMe();
+          const q = query(
+            collection(db, "posts"),
+            where("userId", "==", user.value.uid)
+          );
+          const querySnapshot = await getDocs(q);
+          myPosts[0] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
         }
         break;
       case 1:
         if (myPosts[1].length === 0) {
-          myPosts[1] = await loadPostsLikedOrFavoredByMe();
+          const q = query(
+            collection(db, "posts"),
+            where("likedBy", "array-contains", user.value.uid)
+          );
+          const querySnapshot = await getDocs(q);
+          myPosts[1] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
         }
         break;
       case 2:
         if (myPosts[2].length === 0) {
-          myPosts[2] = await loadPostsLikedOrFavoredByMe("favors");
+          const q = query(
+            collection(db, "posts"),
+            where("favoredBy", "array-contains", user.value.uid)
+          );
+          const querySnapshot = await getDocs(q);
+          myPosts[2] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
         }
         break;
       default:

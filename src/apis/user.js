@@ -1,39 +1,24 @@
-// // 引入自定義的 request 函式，用來發送 API 請求
-// import { request } from "../utils/request";
-// // 引入 getUser 和 saveUser 函式，分別用來取得當前使用者資料和儲存使用者資料
-// import { getUser, saveUser } from "./auth";
+import { db, auth } from "../firebase";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 
-// // 更改使用者資料功能
-// export async function changeUser(user) {
-//   const response = await request(`/api/users/${getUser().id}`, {  // 發送 PUT 請求更新使用者資料
-//     method: "PUT",  // 請求方法為 PUT
-//     body: user,  // 傳送的資料為更新後的使用者資料
-//   });
-//   saveUser(response);  // 更新使用者資料並儲存
-//   return response;  // 回傳更新後的使用者資料
-// }
-
-
-
-// src/api/user.js
-import { db } from '../firebase';
-import { doc, getDoc } from "firebase/firestore";
-
-// 取得用戶資料
-export async function getUserData(userId) {
-  try {
-    const userDocRef = doc(db, "users", userId);
-    const docSnap = await getDoc(userDocRef);
-    
-    if (docSnap.exists()) {
-      console.log("User data:", docSnap.data());
-      return docSnap.data(); // 返回用戶資料
-    } else {
-      console.log("No such user!");
-      return null; // 如果沒有找到用戶資料，返回 null
-    }
-  } catch (error) {
-    console.error("Error getting user data:", error);
-    throw error; // 將錯誤丟給上層處理
+// 取得使用者資料
+export async function getUser(uid) {
+  const userRef = doc(db, "users", uid);
+  const snapshot = await getDoc(userRef);
+  if (snapshot.exists()) {
+    return { id: snapshot.id, ...snapshot.data() };
   }
+  return null;
+}
+
+// 更新使用者資料
+export async function updateUser(uid, data) {
+  const userRef = doc(db, "users", uid);
+  await updateDoc(userRef, data);
+}
+
+// 註冊時，新增使用者資料（可選）
+export async function createUserProfile(uid, profileData) {
+  const userRef = doc(db, "users", uid);
+  await setDoc(userRef, profileData);
 }

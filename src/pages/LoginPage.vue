@@ -38,8 +38,8 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { login, register } from "@/apis/auth";
-
+import { login, register } from "../apis/auth";
+import { createUserProfile } from "../apis/user"; 
 const isLogin = ref(true);
 
 const email = ref("");
@@ -58,15 +58,25 @@ const handleRegister = async () => {
     return;
   }
   try {
-    // 呼叫註冊函數，傳入 email, username 和 password
-    const user = await register(email.value, username.value, password.value);
+    const user = await register(email.value, password.value);
+
+    // 註冊成功 -> 建立 Firestore 個人資料
+    await createUserProfile(user.uid, {
+      name: username.value,
+      email: email.value,
+      avatar: "",   // 預設空
+      intro: "",    // 預設空
+      website: "",  // 預設空
+      createdAt: new Date(),
+    });
+
     console.log("User registered:", user);
-    router.replace("/"); // 註冊成功後，跳轉到首頁
+    router.replace("/");
   } catch (err) {
     error.value = err.message || "註冊失敗";
     console.error("Registration error:", err.message);
   }
-}
+};
 
 // 登入處理
 const handleLogin = async () => {

@@ -8,7 +8,8 @@ import {
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { app } from "../firebase"; // 假设 firebase 配置在此文件
+import { initializeApp } from "firebase/app";
+
 
 // Firebase 配置
 const firebaseConfig = {

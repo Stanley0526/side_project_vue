@@ -40,10 +40,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  if (to.name !== "login" && !getJwtToken()) {
+  if (to.name !== "login" ) {
     return { name: "login" };
   }
-  if (to.name === "login" && getJwtToken()) {
+  if (to.name === "login") {
     return { name: "home" };
   }
 });
