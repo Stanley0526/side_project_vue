@@ -1,26 +1,19 @@
+// src/apis/comment.js
 import { db } from "../firebase";
-import { collection, addDoc, getDocs, query, where, serverTimestamp, orderBy } from "firebase/firestore";
-import { auth } from "../firebase";
+import { collection, addDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 
-// 發表留言
-export async function createComment(postId, text) {
-  const user = auth.currentUser;
-  if (!user) throw new Error("尚未登入");
-
+export async function addComment(postId, commentData) {
   const commentsRef = collection(db, "comments");
   await addDoc(commentsRef, {
+    ...commentData,
     postId,
-    text,
-    userId: user.uid,
-    createdAt: serverTimestamp(),
+    createdAt: new Date(),
   });
 }
 
-// 撈一篇貼文底下的留言
-export async function loadComments(postId) {
+export async function getComments(postId) {
   const commentsRef = collection(db, "comments");
   const q = query(commentsRef, where("postId", "==", postId), orderBy("createdAt", "asc"));
-  const snapshot = await getDocs(q);
-
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
