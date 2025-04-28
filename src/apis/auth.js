@@ -88,18 +88,17 @@ import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from "firebase/auth";
 
 // 註冊功能
-export async function register(email, password) {
+export const register = async (email, username, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    console.log("User registered:", user);
-    return user; // 返回註冊後的用戶資料
+    // 可以在这里将用户的用户名存储到 Firestore 等数据库
+    console.log('User registered:', user);
+    return user;
   } catch (error) {
-    console.error("Registration error:", error.message);
-    throw error; // 將錯誤丟給上層處理
+    throw new Error(error.message);
   }
-}
-
+};
 // 登入功能
 export async function login(email, password) {
   try {

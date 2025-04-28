@@ -16,7 +16,7 @@
 
 
 // src/api/user.js
-import { db } from './firebase';
+import { db } from '../firebase';
 import { doc, getDoc } from "firebase/firestore";
 
 // 取得用戶資料

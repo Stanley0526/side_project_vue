@@ -38,7 +38,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { login, register } from "@/api/auth";
+import { login, register } from "@/apis/auth";
 
 const isLogin = ref(true);
 
